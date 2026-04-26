@@ -1,6 +1,6 @@
 export default function Skeleton() {
   return (
-    <div className="min-h-screen bg-gray-100 py-4 px-2">
+    <div className="h-screen bg-gray-100 py-4 px-2 overflow-auto">
       <div className="max-w-lg mx-auto">
         <div className="bg-white rounded-2xl p-4 shadow-xl border border-gray-200">
           {/* Language Switcher Skeleton */}
