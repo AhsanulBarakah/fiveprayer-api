@@ -67,22 +67,8 @@ export default function Home() {
   function getNextPrayer(): { name: string; time: string; icon: string } | null {
     if (!prayerData) return null;
 
-    // Normalize the API's next_prayer to match prayer_schedule keys
     const apiNextPrayer = prayerData.next_prayer['en'].toLowerCase();
-    const prayerKeyMap: { [key: string]: string } = {
-      'fajr': 'fajr',
-      'dhuhr': 'dhuhr',
-      'asr': 'asr',
-      'asra': 'asr', // Normalize "asra" to "asr"
-      'maghrib': 'maghrib',
-      'isha': 'isha',
-    };
-    
-    const prayerKey = prayerKeyMap[apiNextPrayer] || apiNextPrayer;
-    const prayer = prayerData.prayer_schedule[prayerKey as keyof typeof prayerData.prayer_schedule];
-    
-    if (!prayer) return null;
-
+    const prayerKeys: (keyof typeof prayerData.prayer_schedule)[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
     const prayerIcons: { [key: string]: string } = {
       'fajr': '🌙',
       'dhuhr': '☀️',
@@ -91,11 +77,22 @@ export default function Home() {
       'isha': '🌃',
     };
 
-    return {
-      name: prayerKey,
-      time: prayer.begins['en'],
-      icon: prayerIcons[prayerKey] || '🌙',
-    };
+    // Find the prayer key by matching the API's next_prayer name with prayer_schedule names
+    for (const key of prayerKeys) {
+      const prayer = prayerData.prayer_schedule[key];
+      if (!prayer) continue;
+      
+      const prayerName = prayer.name['en'].toLowerCase();
+      if (prayerName === apiNextPrayer || apiNextPrayer.includes(prayerName) || prayerName.includes(apiNextPrayer)) {
+        return {
+          name: key,
+          time: prayer.begins['en'],
+          icon: prayerIcons[key],
+        };
+      }
+    }
+    
+    return null;
   }
 
   const nextPrayer = getNextPrayer();
