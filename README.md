@@ -244,8 +244,9 @@ For self-hosting or custom deployment.
 
 ### Next Prayer Highlight Wrong in Arabic
 
-- The app now uses the API's next_prayer data directly for highlighting
-- This ensures correct prayer highlighting regardless of language (English/Arabic)
+- The app now uses time-based comparison to determine the next prayer
+- This ensures correct prayer highlighting regardless of API response format or language (English/Arabic)
+- The highlighting is calculated by comparing current time with prayer times from the schedule
 
 ### Deployment Issues
 
@@ -258,6 +259,12 @@ For self-hosting or custom deployment.
 - Ensure you're running `npm run dev` from the project root
 - Check that port 3000 is not already in use
 - Verify Node.js version is >= 18.0.0
+
+### White Flash Before Data Loads
+
+- The app now displays a loading spinner while fetching prayer times
+- This prevents a white screen flash before the data is loaded
+- The loading state shows a spinner with "Loading prayer times..." message
 
 ## 📝 Development Workflow
 
