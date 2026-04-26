@@ -110,22 +110,18 @@ export default function Home() {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     
-    const prayers: { key: string; time: string; icon: string }[] = [
-      { key: 'fajr', time: prayerData.prayer_schedule.fajr.begins['en'], icon: '🌙' },
-      { key: 'dhuhr', time: prayerData.prayer_schedule.dhuhr.begins['en'], icon: '☀️' },
-      { key: 'asr', time: prayerData.prayer_schedule.asr.begins['en'], icon: '🌤️' },
-      { key: 'maghrib', time: prayerData.prayer_schedule.maghrib.begins['en'], icon: '🌇' },
-      { key: 'isha', time: prayerData.prayer_schedule.isha.begins['en'], icon: '🌃' },
+    const prayers: { name: string; time: string; icon: string }[] = [
+      { name: 'fajr', time: prayerData.prayer_schedule.fajr.begins['en'], icon: '🌙' },
+      { name: 'dhuhr', time: prayerData.prayer_schedule.dhuhr.begins['en'], icon: '☀️' },
+      { name: 'asr', time: prayerData.prayer_schedule.asr.begins['en'], icon: '🌤️' },
+      { name: 'maghrib', time: prayerData.prayer_schedule.maghrib.begins['en'], icon: '🌇' },
+      { name: 'isha', time: prayerData.prayer_schedule.isha.begins['en'], icon: '🌃' },
     ];
 
     for (const prayer of prayers) {
       const prayerMinutes = parseTime(prayer.time);
       if (currentMinutes < prayerMinutes) {
-        return {
-          name: prayer.key,
-          time: prayer.time,
-          icon: prayer.icon,
-        };
+        return prayer;
       }
     }
     
