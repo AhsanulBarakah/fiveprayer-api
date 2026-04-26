@@ -12,6 +12,7 @@ export default function Home() {
   const [prayerData, setPrayerData] = useState<PrayerTimesResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentLang, setCurrentLang] = useState<'en' | 'ar'>('en');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadPrayerTimes() {
@@ -24,6 +25,8 @@ export default function Home() {
         setPrayerData(data);
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Failed to load prayer times');
+      } finally {
+        setIsLoading(false);
       }
     }
     loadPrayerTimes();
@@ -152,6 +155,17 @@ export default function Home() {
           >
             Try Again
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl p-8 text-center max-w-md shadow-xl border border-gray-200">
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading prayer times...</p>
         </div>
       </div>
     );
