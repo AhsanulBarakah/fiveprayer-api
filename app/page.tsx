@@ -36,108 +36,66 @@ export default function Home() {
   useEffect(() => {
     if (!prayerData) return;
 
-    // Check every minute if we should fetch new data
-    const fetchInterval = setInterval(() => {
-      if (shouldFetchNewData()) {
-        fetch('/api/prayer-times')
-          .then(res => res.json())
-          .then(setPrayerData)
-          .catch(setError);
-      }
-    }, 60000);
-
-    // Schedule midnight refresh
-    const midnightTimeout = scheduleMidnightRefresh();
+    // Schedule 1 AM refresh
+    const refreshTimeout = scheduleOneAMRefresh();
 
     return () => {
-      clearInterval(fetchInterval);
-      if (midnightTimeout) clearTimeout(midnightTimeout);
+      if (refreshTimeout) clearTimeout(refreshTimeout);
     };
   }, [prayerData, currentLang]);
 
-  function parseTime(timeStr: string): number {
-    const isPM = timeStr.toLowerCase().includes('pm');
-    const isAM = timeStr.toLowerCase().includes('am');
-    const cleanTime = timeStr.replace(/(am|pm|AM|PM|\s)/g, '');
-    const [hours, minutes] = cleanTime.split(':').map(Number);
-    let totalMinutes = hours * 60 + minutes;
-    if (isPM && hours !== 12) totalMinutes += 12 * 60;
-    if (isAM && hours === 12) totalMinutes -= 12 * 60;
-    return totalMinutes;
-  }
-
-  function shouldFetchNewData(): boolean {
-    if (!prayerData) return false;
+  function scheduleOneAMRefresh(): NodeJS.Timeout | null {
     const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const oneAM = new Date(now);
+    oneAM.setHours(1, 0, 0, 0);
     
-    const prayerKeys: (keyof typeof prayerData.prayer_schedule)[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-
-    for (const key of prayerKeys) {
-      const prayer = prayerData.prayer_schedule[key];
-      if (!prayer || !prayer.iqamah) continue;
-      
-      const iqamahMinutes = parseTime(prayer.iqamah['en']);
-      if (currentMinutes >= iqamahMinutes && currentMinutes < iqamahMinutes + 1) {
-        return true;
-      }
+    // If it's already past 1 AM, schedule for tomorrow
+    if (now.getTime() > oneAM.getTime()) {
+      oneAM.setDate(oneAM.getDate() + 1);
     }
-    return false;
-  }
-
-  function scheduleMidnightRefresh(): NodeJS.Timeout | null {
-    const now = new Date();
-    const midnight = new Date(now);
-    midnight.setHours(24, 0, 0, 0);
-    const msUntilMidnight = midnight.getTime() - now.getTime();
+    
+    const msUntilOneAM = oneAM.getTime() - now.getTime();
     
     return setTimeout(() => {
       fetch('/api/prayer-times')
         .then(res => res.json())
         .then(setPrayerData)
         .catch(setError);
-    }, msUntilMidnight);
+    }, msUntilOneAM);
   }
 
   function getNextPrayer(): { name: string; time: string; icon: string } | null {
     if (!prayerData) return null;
 
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    // Normalize the API's next_prayer to match prayer_schedule keys
+    const apiNextPrayer = prayerData.next_prayer['en'].toLowerCase();
+    const prayerKeyMap: { [key: string]: string } = {
+      'fajr': 'fajr',
+      'dhuhr': 'dhuhr',
+      'asr': 'asr',
+      'asra': 'asr', // Normalize "asra" to "asr"
+      'maghrib': 'maghrib',
+      'isha': 'isha',
+    };
     
-    const prayerKeys: (keyof typeof prayerData.prayer_schedule)[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    const prayerKey = prayerKeyMap[apiNextPrayer] || apiNextPrayer;
+    const prayer = prayerData.prayer_schedule[prayerKey as keyof typeof prayerData.prayer_schedule];
+    
+    if (!prayer) return null;
+
     const prayerIcons: { [key: string]: string } = {
       'fajr': '🌙',
       'dhuhr': '☀️',
       'asr': '🌤️',
       'maghrib': '🌇',
-      'isha': '�',
+      'isha': '🌃',
     };
 
-    for (const key of prayerKeys) {
-      const prayer = prayerData.prayer_schedule[key];
-      if (!prayer) continue;
-      
-      const prayerMinutes = parseTime(prayer.begins['en']);
-      if (currentMinutes < prayerMinutes) {
-        return {
-          name: key,
-          time: prayer.begins['en'],
-          icon: prayerIcons[key],
-        };
-      }
-    }
-    
-    // If all prayers have passed, return the first prayer (fajr) for tomorrow
-    const firstPrayer = prayerData.prayer_schedule.fajr;
-    if (firstPrayer) {
-      return {
-        name: 'fajr',
-        time: firstPrayer.begins['en'],
-        icon: prayerIcons['fajr'],
-      };
-    }
-    return null;
+    return {
+      name: prayerKey,
+      time: prayer.begins['en'],
+      icon: prayerIcons[prayerKey] || '🌙',
+    };
   }
 
   const nextPrayer = getNextPrayer();

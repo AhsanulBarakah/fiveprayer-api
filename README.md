@@ -120,19 +120,18 @@ The API key is stored in the `.env.local` file (not committed to git). Use `.env
 1. **Page Load**: Client fetches prayer times from `/api/prayer-times`
 2. **API Endpoint**: Calls FivePrayer API with the API key
 3. **Display**: Prayer times rendered in the UI
-4. **Updates**: Next prayer recalculates every minute
-5. **Midnight**: Prayer times refresh for the new day
+4. **Updates**: Next prayer determined from API's next_prayer field
+5. **1 AM Daily Refresh**: Prayer times automatically refresh at 1 AM for the new day
 
 ### Client-Side Features
 
-- **Dynamic Prayer Calculation**: Next prayer calculated based on current time
-- **Periodic Updates**: Next prayer updates every minute
+- **Next Prayer Highlighting**: Uses API's next_prayer field with name normalization
 - **Language Switching**: Instant toggle between English and Arabic
 
 ### Server-Side Features
 
 - **API Routes**: Server-side API calls for fresh prayer times
-- **Daily Auto-Refresh**: Prayer times automatically refresh at midnight
+- **Daily Auto-Refresh**: Prayer times automatically refresh at 1 AM
 
 ## 🚢 Deployment
 
