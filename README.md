@@ -262,9 +262,9 @@ For self-hosting or custom deployment.
 
 ### White Flash Before Data Loads
 
-- The app now displays a loading spinner while fetching prayer times
+- The app now displays a skeleton loading state while fetching prayer times
 - This prevents a white screen flash before the data is loaded
-- The loading state shows a spinner with "Loading prayer times..." message
+- The skeleton matches the actual layout for a smoother user experience
 
 ## 📝 Development Workflow
 
