@@ -102,7 +102,7 @@ export default function Home() {
 
   if (error) {
     return (
-      <div className="h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4 overflow-auto">
+      <div className="h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4 overflow-hidden">
         <div className="bg-white rounded-3xl p-8 text-center max-w-md shadow-2xl border border-gray-200">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl">⚠️</span>
@@ -132,9 +132,9 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen bg-gray-100 py-4 px-2 overflow-auto">
-      <div className="max-w-lg mx-auto">
-        <div className="bg-white rounded-2xl p-4 shadow-xl border border-gray-200">
+    <div className="h-screen bg-gray-100 py-2 px-2 overflow-hidden flex items-center justify-center">
+      <div className="max-w-lg w-full">
+        <div className="bg-white rounded-2xl p-3 shadow-xl border border-gray-200">
           <LanguageSwitcher 
             currentLang={currentLang} 
             onLanguageChange={setCurrentLang} 
