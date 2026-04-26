@@ -1,6 +1,6 @@
 # FivePrayer Times
 
-A prayer times application built with Astro, displaying Islamic prayer times in English and Arabic.
+A prayer times application built with Next.js, displaying Islamic prayer times in English and Arabic.
 
 ## Features
 
@@ -16,7 +16,7 @@ A prayer times application built with Astro, displaying Islamic prayer times in 
 
 ### Prerequisites
 
-- Node.js >= 24.0.0
+- Node.js >= 18.0.0
 
 ### Installation
 
@@ -28,9 +28,9 @@ A prayer times application built with Astro, displaying Islamic prayer times in 
 
 3. Set up environment variables:
    ```sh
-   cp .env.example .env
+   cp .env.example .env.local
    ```
-   Then add your FivePrayer API key to `.env`:
+   Then add your FivePrayer API key to `.env.local`:
    ```
    FIVEPRAYER_API_KEY=your_api_key_here
    ```
@@ -41,7 +41,7 @@ A prayer times application built with Astro, displaying Islamic prayer times in 
 npm run dev
 ```
 
-The site will be available at `http://localhost:4321`
+The site will be available at `http://localhost:3000`
 
 ### Build
 
@@ -52,49 +52,55 @@ npm run build
 ### Preview
 
 ```sh
-npm run preview
+npm run start
 ```
 
 ## 📁 Project Structure
 
 ```text
 /
+├── app/
+│   ├── api/
+│   │   └── prayer-times/
+│   │       └── route.ts
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── lib/
+│   └── api.ts
 ├── public/
-├── src
-│   ├── components/
-│   │   └── PrayerTimes.astro
-│   ├── lib/
-│   │   └── api.ts
-│   ├── layouts/
-│   └── pages/
-│       └── index.astro
 ├── .env.example
-└── package.json
+├── .env.local
+├── next.config.js
+├── package.json
+└── tsconfig.json
 ```
 
 ## 🔐 API Key
 
-The API key is stored in the `.env` file (not committed to git). Use `.env.example` as a template for your local setup.
+The API key is stored in the `.env.local` file (not committed to git). Use `.env.example` as a template for your local setup.
 
 ## 🛠 Tech Stack
 
-- **Framework**: Astro 6.x
+- **Framework**: Next.js 16.x
 - **Language**: TypeScript
-- **Styling**: Inline CSS with scoped styles
+- **Styling**: Tailwind CSS
 - **API**: FivePrayer API
-- **Deployment**: GitHub Pages via GitHub Actions
-- **Node.js**: >= 24.0.0
+- **Deployment**: Vercel
+- **Node.js**: >= 18.0.0
 
 ## 🏗 Architecture
 
 ### Component Structure
 
-- **PrayerTimes.astro**: Main component that:
+- **page.tsx**: Main page component that:
   - Fetches prayer times from the API
   - Displays prayer schedule
   - Handles language switching
   - Updates next prayer dynamically
   - Refreshes data at midnight
+- **route.ts**: API route that fetches prayer times from FivePrayer API
+- **api.ts**: API client for FivePrayer API
 
 ### Data Flow
 
@@ -110,10 +116,10 @@ The API key is stored in the `.env` file (not committed to git). Use `.env.examp
 - **Periodic Updates**: Next prayer updates every minute
 - **Language Switching**: Instant toggle between English and Arabic
 
-### Server-Side Features (Vercel/Netlify Only)
+### Server-Side Features
 
-- **Daily Auto-Refresh**: Prayer times automatically refresh at midnight when deployed to Vercel or Netlify
-- **API Endpoints**: Server-side API calls for fresh prayer times
+- **API Routes**: Server-side API calls for fresh prayer times
+- **Daily Auto-Refresh**: Prayer times automatically refresh at midnight
 
 ## 🚢 Deployment
 
@@ -121,7 +127,7 @@ This project supports multiple deployment platforms. Choose based on your needs:
 
 ### Option 1: Vercel (Recommended)
 
-Vercel supports server-side functions, enabling daily auto-refresh of prayer times.
+Vercel is the recommended deployment platform for Next.js applications.
 
 #### Setup Steps
 
@@ -149,14 +155,15 @@ Vercel supports server-side functions, enabling daily auto-refresh of prayer tim
    ```
 
 #### Benefits
-- Server-side functions for daily auto-refresh
+- Native Next.js support
 - Automatic HTTPS
 - Global CDN
 - Preview deployments for every branch
+- Server-side API routes
 
 ### Option 2: Netlify
 
-Netlify also supports server-side functions for daily auto-refresh.
+Netlify also supports Next.js applications.
 
 #### Setup Steps
 
@@ -179,52 +186,29 @@ Netlify also supports server-side functions for daily auto-refresh.
 
 4. **Configure Build Settings**:
    - Build command: `npm run build`
-   - Publish directory: `dist`
+   - Publish directory: `.next`
 
 #### Benefits
-- Server-side functions for daily auto-refresh
+- Next.js support
 - Automatic HTTPS
 - Form handling
 - Edge functions
 
-### Option 3: GitHub Pages (Static Only)
+### Option 3: Docker
 
-GitHub Pages is a static hosting service with limitations.
+For self-hosting or custom deployment.
 
 #### Setup Steps
 
-1. **Push to GitHub**: Ensure your code is pushed to the main branch
-2. **Add API Key Secret**:
-   - Go to repository Settings > Secrets and variables > Actions
-   - Click "New repository secret"
-   - Name: `FIVEPRAYER_API_KEY`
-   - Value: Your API key
-   - Click "Add secret"
-3. **Configure GitHub Pages**:
-   - Go to Settings > Pages
-   - Set Source to "GitHub Actions"
-   - Save the changes
+1. **Build Docker image**:
+   ```sh
+   docker build -t fiveprayer-api .
+   ```
 
-#### Deployment Workflow
-
-The `.github/workflows/deploy.yml` file handles:
-- Building the site with Node.js 24
-- Passing the API key as an environment variable
-- Deploying to GitHub Pages using official GitHub Actions
-
-#### Automatic Deployments
-
-Every push to the `main` branch triggers:
-- Automatic build
-- Deployment to GitHub Pages
-- Site updates at: `https://username.github.io/fiveprayer-astro/`
-
-#### Limitations
-- **No server-side functions**: Prayer times are static (fetched during build)
-- **No daily auto-refresh**: Must redeploy to update prayer times
-- **No API endpoints**: Client-side API calls won't work
-
-**Recommendation**: Use Vercel or Netlify for full functionality including daily auto-refresh.
+2. **Run container**:
+   ```sh
+   docker run -p 3000:3000 -e FIVEPRAYER_API_KEY=your_key fiveprayer-api
+   ```
 
 ## 🌐 Environment Variables
 
@@ -237,32 +221,32 @@ Every push to the `main` branch triggers:
 ### Prayer Times Not Loading
 
 - Check that your API key is valid
-- Verify the API key is in the `.env` file locally
-- For production, ensure `FIVEPRAYER_API_KEY` is set in GitHub Secrets
+- Verify the API key is in the `.env.local` file locally
+- For production, ensure `FIVEPRAYER_API_KEY` is set in your deployment platform
 
 ### Next Prayer Not Updating
 
 - Ensure JavaScript is enabled in your browser
 - Check the browser console for errors
 - The next prayer updates every minute automatically
-- **Recent Fix**: Updated time parsing to handle 12-hour format (AM/PM) correctly
+- **Recent Fix**: Updated to use API's next_prayer data for accurate highlighting in both languages
 
-### Next Prayer Highlight Wrong
+### Next Prayer Highlight Wrong in Arabic
 
-- The app now properly converts 12-hour time format (e.g., "5:30 PM") to 24-hour format for comparison
-- This ensures the correct next prayer is highlighted based on current time
+- The app now uses the API's next_prayer data directly for highlighting
+- This ensures correct prayer highlighting regardless of language (English/Arabic)
 
 ### Deployment Issues
 
-- Verify GitHub Pages is set to "GitHub Actions"
-- Check the Actions tab for workflow errors
-- Ensure the API key secret is added to GitHub
+- Verify environment variables are set in your deployment platform
+- Check deployment logs for errors
+- Ensure the API key is correctly configured
 
-### Local Development 404 Error
+### Local Development Issues
 
-- The base path is set to `/` for local development
-- For production, it's set to `/fiveprayer-astro/`
-- This is handled automatically via `import.meta.env.PROD`
+- Ensure you're running `npm run dev` from the project root
+- Check that port 3000 is not already in use
+- Verify Node.js version is >= 18.0.0
 
 ## 📝 Development Workflow
 
@@ -277,7 +261,7 @@ Every push to the `main` branch triggers:
    ```sh
    git push origin main
    ```
-5. GitHub Actions automatically deploys to GitHub Pages
+5. Deploy to your platform (Vercel/Netlify/etc.)
 
 ## 🤝 Contributing
 
@@ -297,5 +281,5 @@ This project is open source and available under the MIT License.
 ## 🙏 Acknowledgments
 
 - [FivePrayer API](https://fiveprayer.com/) for prayer times data
-- [Astro](https://astro.build/) for the framework
-- GitHub Pages for hosting
+- [Next.js](https://nextjs.org/) for the framework
+- [Tailwind CSS](https://tailwindcss.com/) for styling
