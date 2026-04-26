@@ -103,20 +103,30 @@ export default function Home() {
   function getNextPrayer(): { name: string; time: string; icon: string } | null {
     if (!prayerData) return null;
 
-    const nextPrayerName = prayerData.next_prayer['en'].toLowerCase();
-    const prayerIcons: { [key: string]: string } = {
-      'fajr': '🌙',
-      'dhuhr': '☀️',
-      'asr': '🌤️',
-      'maghrib': '🌇',
-      'isha': '🌃',
-    };
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    const prayers: { key: string; time: string; icon: string }[] = [
+      { key: 'fajr', time: prayerData.prayer_schedule.fajr.begins['en'], icon: '🌙' },
+      { key: 'dhuhr', time: prayerData.prayer_schedule.dhuhr.begins['en'], icon: '☀️' },
+      { key: 'asr', time: prayerData.prayer_schedule.asr.begins['en'], icon: '🌤️' },
+      { key: 'maghrib', time: prayerData.prayer_schedule.maghrib.begins['en'], icon: '🌇' },
+      { key: 'isha', time: prayerData.prayer_schedule.isha.begins['en'], icon: '🌃' },
+    ];
 
-    return {
-      name: nextPrayerName,
-      time: prayerData.next_time['en'],
-      icon: prayerIcons[nextPrayerName] || '🌙',
-    };
+    for (const prayer of prayers) {
+      const prayerMinutes = parseTime(prayer.time);
+      if (currentMinutes < prayerMinutes) {
+        return {
+          name: prayer.key,
+          time: prayer.time,
+          icon: prayer.icon,
+        };
+      }
+    }
+    
+    // If all prayers have passed, return the first prayer (fajr) for tomorrow
+    return prayers[0] || null;
   }
 
   const nextPrayer = getNextPrayer();
@@ -171,8 +181,8 @@ export default function Home() {
           {nextPrayer && (
             <NextPrayer
               nextPrayerLabel={prayerData.next_prayer_label[currentLang]}
-              nextPrayer={prayerData.next_prayer[currentLang]}
-              nextTime={prayerData.next_time[currentLang]}
+              nextPrayer={prayerData.prayer_schedule[nextPrayer.name as keyof typeof prayerData.prayer_schedule].name[currentLang]}
+              nextTime={prayerData.prayer_schedule[nextPrayer.name as keyof typeof prayerData.prayer_schedule].begins[currentLang]}
               icon={nextPrayer.icon}
             />
           )}
