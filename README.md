@@ -63,6 +63,13 @@ npm run start
 │   ├── api/
 │   │   └── prayer-times/
 │   │       └── route.ts
+│   ├── components/
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   ├── LanguageSwitcher.tsx
+│   │   ├── NextPrayer.tsx
+│   │   ├── PrayerItem.tsx
+│   │   └── PrayerSchedule.tsx
 │   ├── globals.css
 │   ├── layout.tsx
 │   └── page.tsx
@@ -95,10 +102,14 @@ The API key is stored in the `.env.local` file (not committed to git). Use `.env
 
 - **page.tsx**: Main page component that:
   - Fetches prayer times from the API
-  - Displays prayer schedule
-  - Handles language switching
-  - Updates next prayer dynamically
-  - Refreshes data at midnight
+  - Manages state and data fetching
+  - Coordinates child components
+- **LanguageSwitcher.tsx**: Language toggle component
+- **Header.tsx**: Displays title, date, and live clock
+- **NextPrayer.tsx**: Shows next prayer card
+- **PrayerItem.tsx**: Individual prayer row with highlighting
+- **PrayerSchedule.tsx**: Full prayer schedule list
+- **Footer.tsx**: Timezone and attribution
 - **route.ts**: API route that fetches prayer times from FivePrayer API
 - **api.ts**: API client for FivePrayer API
 
