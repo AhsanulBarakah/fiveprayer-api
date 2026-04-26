@@ -5,8 +5,8 @@ interface LanguageSwitcherProps {
 
 export default function LanguageSwitcher({ currentLang, onLanguageChange }: LanguageSwitcherProps) {
   return (
-    <div className="flex justify-center gap-3 mb-4">
-      <label className="flex items-center gap-1 cursor-pointer text-sm px-3 py-1 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+    <div className="flex justify-center gap-2 mb-3">
+      <label className="flex items-center gap-1 cursor-pointer text-xs px-2 py-1 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
         <input
           type="radio"
           name="language"
@@ -17,7 +17,7 @@ export default function LanguageSwitcher({ currentLang, onLanguageChange }: Lang
         />
         <span>English</span>
       </label>
-      <label className="flex items-center gap-1 cursor-pointer text-sm px-3 py-1 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
+      <label className="flex items-center gap-1 cursor-pointer text-xs px-2 py-1 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
         <input
           type="radio"
           name="language"

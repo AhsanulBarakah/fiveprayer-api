@@ -17,22 +17,13 @@ export default function Header({ title, date, currentTimeLabel, currentTime, cur
     const clockElement = document.getElementById('live-clock');
     if (clockElement) {
       const now = new Date();
-      const hours = now.getHours();
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      const seconds = now.getSeconds().toString().padStart(2, '0');
-      const ampm = hours >= 12 ? 'PM' : 'AM';
-      const displayHours = hours % 12 || 12;
-      
-      if (currentLang === 'ar') {
-        const toArabicNumeral = (n: string) => {
-          const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-          return n.replace(/\d/g, (d) => arabicNumerals[parseInt(d)]);
-        };
-        const arabicAmpm = hours >= 12 ? 'م' : 'ص';
-        clockElement.textContent = `${toArabicNumeral(displayHours.toString())}:${toArabicNumeral(minutes)}:${toArabicNumeral(seconds)} ${arabicAmpm}`;
-      } else {
-        clockElement.textContent = `${displayHours}:${minutes}:${seconds} ${ampm}`;
-      }
+      const timeString = now.toLocaleTimeString(currentLang === 'ar' ? 'ar-SA' : 'en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+      clockElement.textContent = timeString;
     }
   }
 

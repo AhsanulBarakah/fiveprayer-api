@@ -102,7 +102,7 @@ export default function Home() {
 
   if (error) {
     return (
-      <div className="h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-4 overflow-hidden">
+      <div className="h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center p-6 overflow-hidden">
         <div className="bg-white rounded-3xl p-8 text-center max-w-md shadow-2xl border border-gray-200">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl">⚠️</span>
@@ -132,27 +132,27 @@ export default function Home() {
   }
 
   return (
-    <div className="h-screen bg-gray-100 py-2 px-2 overflow-hidden flex items-center justify-center">
-      <div className="max-w-lg w-full">
-        <div className="bg-white rounded-2xl p-3 shadow-xl border border-gray-200">
+    <div className="h-screen bg-gray-100 py-8 px-2 overflow-hidden">
+      <div className="max-w-md mx-auto h-full flex flex-col justify-center">
+        <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
           <LanguageSwitcher 
             currentLang={currentLang} 
             onLanguageChange={setCurrentLang} 
           />
           
           <Header
-            title={translations.title[currentLang]}
-            date={prayerData.date_translated[currentLang]}
-            currentTimeLabel={prayerData.current_local_time_label[currentLang]}
-            currentTime={prayerData.current_time[currentLang]}
+            title={translations.title[currentLang] || translations.title['en']}
+            date={prayerData.date_translated[currentLang] || prayerData.date_translated['en']}
+            currentTimeLabel={prayerData.current_local_time_label[currentLang] || prayerData.current_local_time_label['en']}
+            currentTime={prayerData.current_time[currentLang] || prayerData.current_time['en']}
             currentLang={currentLang}
           />
 
           {nextPrayer && (
             <NextPrayer
-              nextPrayerLabel={prayerData.next_prayer_label[currentLang]}
-              nextPrayer={prayerData.prayer_schedule[nextPrayer.name as keyof typeof prayerData.prayer_schedule].name[currentLang]}
-              nextTime={prayerData.prayer_schedule[nextPrayer.name as keyof typeof prayerData.prayer_schedule].begins[currentLang]}
+              nextPrayerLabel={prayerData.next_prayer_label[currentLang] || prayerData.next_prayer_label['en']}
+              nextPrayer={prayerData.prayer_schedule[nextPrayer.name as keyof typeof prayerData.prayer_schedule].name[currentLang] || prayerData.prayer_schedule[nextPrayer.name as keyof typeof prayerData.prayer_schedule].name['en']}
+              nextTime={prayerData.prayer_schedule[nextPrayer.name as keyof typeof prayerData.prayer_schedule].begins[currentLang] || prayerData.prayer_schedule[nextPrayer.name as keyof typeof prayerData.prayer_schedule].begins['en']}
               icon={nextPrayer.icon}
             />
           )}

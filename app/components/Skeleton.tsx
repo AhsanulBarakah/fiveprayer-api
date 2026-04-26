@@ -2,7 +2,7 @@ export default function Skeleton() {
   return (
     <div className="h-screen bg-gray-100 py-8 px-2 overflow-hidden">
       <div className="max-w-md mx-auto h-full flex flex-col justify-center">
-        <div className="bg-white rounded-2xl p-4 shadow-xl border border-gray-200">
+        <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
           {/* Language Switcher Skeleton */}
           <div className="flex justify-center gap-3 mb-4">
             <div className="h-8 w-24 bg-gray-200 rounded-full animate-pulse"></div>
