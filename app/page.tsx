@@ -130,24 +130,20 @@ export default function Home() {
   function getNextPrayer(): { name: string; time: string; icon: string } | null {
     if (!prayerData) return null;
 
-    const now = new Date();
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    
-    const prayers: { name: string; time: string; icon: string }[] = [
-      { name: 'fajr', time: prayerData.prayer_schedule.fajr.begins['en'], icon: '🌙' },
-      { name: 'dhuhr', time: prayerData.prayer_schedule.dhuhr.begins['en'], icon: '☀️' },
-      { name: 'asr', time: prayerData.prayer_schedule.asr.begins['en'], icon: '🌤️' },
-      { name: 'maghrib', time: prayerData.prayer_schedule.maghrib.begins['en'], icon: '🌇' },
-      { name: 'isha', time: prayerData.prayer_schedule.isha.begins['en'], icon: '🌃' },
-    ];
+    const nextPrayerName = prayerData.next_prayer['en'].toLowerCase();
+    const prayerIcons: { [key: string]: string } = {
+      'fajr': '🌙',
+      'dhuhr': '☀️',
+      'asr': '🌤️',
+      'maghrib': '🌇',
+      'isha': '🌃',
+    };
 
-    for (const prayer of prayers) {
-      const prayerMinutes = parseTime(prayer.time);
-      if (currentMinutes < prayerMinutes) {
-        return prayer;
-      }
-    }
-    return prayers[0] || null;
+    return {
+      name: nextPrayerName,
+      time: prayerData.next_time['en'],
+      icon: prayerIcons[nextPrayerName] || '🌙',
+    };
   }
 
   const nextPrayer = getNextPrayer();
