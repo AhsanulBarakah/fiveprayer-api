@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { PrayerTimesResponse } from '../lib/api';
+import { getNextPrayer, shouldUpdateNextPrayer } from '../lib/prayerUtils';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import Header from './components/Header';
 import NextPrayer from './components/NextPrayer';
@@ -14,6 +15,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [currentLang, setCurrentLang] = useState<'en' | 'ar'>('en');
   const [isLoading, setIsLoading] = useState(true);
+  const [nextPrayer, setNextPrayer] = useState<{ name: string; time: string; icon: string } | null>(null);
 
   useEffect(() => {
     async function loadPrayerTimes() {
@@ -39,8 +41,20 @@ export default function Home() {
     // Schedule 1 AM refresh
     const refreshTimeout = scheduleOneAMRefresh();
 
+    // Update next prayer every minute, but only when iqamah time has passed
+    const nextPrayerInterval = setInterval(() => {
+      if (shouldUpdateNextPrayer(prayerData)) {
+        const next = getNextPrayer(prayerData);
+        setNextPrayer(next);
+      }
+    }, 60000); // Check every minute
+
+    // Initial calculation
+    setNextPrayer(getNextPrayer(prayerData));
+
     return () => {
       if (refreshTimeout) clearTimeout(refreshTimeout);
+      clearInterval(nextPrayerInterval);
     };
   }, [prayerData, currentLang]);
 
@@ -64,38 +78,6 @@ export default function Home() {
     }, msUntilOneAM);
   }
 
-  function getNextPrayer(): { name: string; time: string; icon: string } | null {
-    if (!prayerData) return null;
-
-    const apiNextPrayer = prayerData.next_prayer['en'].toLowerCase();
-    const prayerKeys: (keyof typeof prayerData.prayer_schedule)[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-    const prayerIcons: { [key: string]: string } = {
-      'fajr': '🌙',
-      'dhuhr': '☀️',
-      'asr': '🌤️',
-      'maghrib': '🌇',
-      'isha': '🌃',
-    };
-
-    // Find the prayer key by matching the API's next_prayer name with prayer_schedule names
-    for (const key of prayerKeys) {
-      const prayer = prayerData.prayer_schedule[key];
-      if (!prayer) continue;
-      
-      const prayerName = prayer.name['en'].toLowerCase();
-      if (prayerName === apiNextPrayer || apiNextPrayer.includes(prayerName) || prayerName.includes(apiNextPrayer)) {
-        return {
-          name: key,
-          time: prayer.begins['en'],
-          icon: prayerIcons[key],
-        };
-      }
-    }
-    
-    return null;
-  }
-
-  const nextPrayer = getNextPrayer();
   const translations = {
     title: { en: 'Prayer Times', ar: 'أوقات الصلاة' },
   };
