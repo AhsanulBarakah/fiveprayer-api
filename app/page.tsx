@@ -79,9 +79,9 @@ export default function Home() {
   }
 
   function parseTime(timeStr: string): number {
-    const isPM = timeStr.toLowerCase().includes('pm') || timeStr.includes('م');
-    const isAM = timeStr.toLowerCase().includes('am') || timeStr.includes('ص');
-    const cleanTime = timeStr.replace(/(am|pm|AM|PM|م|ص|\s)/g, '');
+    const isPM = timeStr.toLowerCase().includes('pm');
+    const isAM = timeStr.toLowerCase().includes('am');
+    const cleanTime = timeStr.replace(/(am|pm|AM|PM|\s)/g, '');
     const [hours, minutes] = cleanTime.split(':').map(Number);
     let totalMinutes = hours * 60 + minutes;
     if (isPM && hours !== 12) totalMinutes += 12 * 60;
@@ -95,11 +95,11 @@ export default function Home() {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     
     const prayers = [
-      { name: 'fajr', iqamah: prayerData.prayer_schedule.fajr.iqamah?.[currentLang] },
-      { name: 'dhuhr', iqamah: prayerData.prayer_schedule.dhuhr.iqamah?.[currentLang] },
-      { name: 'asr', iqamah: prayerData.prayer_schedule.asr.iqamah?.[currentLang] },
-      { name: 'maghrib', iqamah: prayerData.prayer_schedule.maghrib.iqamah?.[currentLang] },
-      { name: 'isha', iqamah: prayerData.prayer_schedule.isha.iqamah?.[currentLang] },
+      { name: 'fajr', iqamah: prayerData.prayer_schedule.fajr.iqamah?.['en'] },
+      { name: 'dhuhr', iqamah: prayerData.prayer_schedule.dhuhr.iqamah?.['en'] },
+      { name: 'asr', iqamah: prayerData.prayer_schedule.asr.iqamah?.['en'] },
+      { name: 'maghrib', iqamah: prayerData.prayer_schedule.maghrib.iqamah?.['en'] },
+      { name: 'isha', iqamah: prayerData.prayer_schedule.isha.iqamah?.['en'] },
     ];
 
     for (const prayer of prayers) {
@@ -134,11 +134,11 @@ export default function Home() {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     
     const prayers: { name: string; time: string; icon: string }[] = [
-      { name: 'fajr', time: prayerData.prayer_schedule.fajr.begins[currentLang], icon: '🌙' },
-      { name: 'dhuhr', time: prayerData.prayer_schedule.dhuhr.begins[currentLang], icon: '☀️' },
-      { name: 'asr', time: prayerData.prayer_schedule.asr.begins[currentLang], icon: '🌤️' },
-      { name: 'maghrib', time: prayerData.prayer_schedule.maghrib.begins[currentLang], icon: '🌇' },
-      { name: 'isha', time: prayerData.prayer_schedule.isha.begins[currentLang], icon: '🌃' },
+      { name: 'fajr', time: prayerData.prayer_schedule.fajr.begins['en'], icon: '🌙' },
+      { name: 'dhuhr', time: prayerData.prayer_schedule.dhuhr.begins['en'], icon: '☀️' },
+      { name: 'asr', time: prayerData.prayer_schedule.asr.begins['en'], icon: '🌤️' },
+      { name: 'maghrib', time: prayerData.prayer_schedule.maghrib.begins['en'], icon: '🌇' },
+      { name: 'isha', time: prayerData.prayer_schedule.isha.begins['en'], icon: '🌃' },
     ];
 
     for (const prayer of prayers) {
