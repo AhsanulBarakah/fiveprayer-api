@@ -71,20 +71,15 @@ export default function Home() {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     
-    const prayers = [
-      { name: 'fajr', iqamah: prayerData.prayer_schedule.fajr.iqamah?.['en'] },
-      { name: 'dhuhr', iqamah: prayerData.prayer_schedule.dhuhr.iqamah?.['en'] },
-      { name: 'asr', iqamah: prayerData.prayer_schedule.asr.iqamah?.['en'] },
-      { name: 'maghrib', iqamah: prayerData.prayer_schedule.maghrib.iqamah?.['en'] },
-      { name: 'isha', iqamah: prayerData.prayer_schedule.isha.iqamah?.['en'] },
-    ];
+    const prayerKeys: (keyof typeof prayerData.prayer_schedule)[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
-    for (const prayer of prayers) {
-      if (prayer.iqamah) {
-        const iqamahMinutes = parseTime(prayer.iqamah);
-        if (currentMinutes >= iqamahMinutes && currentMinutes < iqamahMinutes + 1) {
-          return true;
-        }
+    for (const key of prayerKeys) {
+      const prayer = prayerData.prayer_schedule[key];
+      if (!prayer || !prayer.iqamah) continue;
+      
+      const iqamahMinutes = parseTime(prayer.iqamah['en']);
+      if (currentMinutes >= iqamahMinutes && currentMinutes < iqamahMinutes + 1) {
+        return true;
       }
     }
     return false;
@@ -110,23 +105,39 @@ export default function Home() {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     
-    const prayers: { name: string; time: string; icon: string }[] = [
-      { name: 'fajr', time: prayerData.prayer_schedule.fajr.begins['en'], icon: '🌙' },
-      { name: 'dhuhr', time: prayerData.prayer_schedule.dhuhr.begins['en'], icon: '☀️' },
-      { name: 'asr', time: prayerData.prayer_schedule.asr.begins['en'], icon: '🌤️' },
-      { name: 'maghrib', time: prayerData.prayer_schedule.maghrib.begins['en'], icon: '🌇' },
-      { name: 'isha', time: prayerData.prayer_schedule.isha.begins['en'], icon: '🌃' },
-    ];
+    const prayerKeys: (keyof typeof prayerData.prayer_schedule)[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    const prayerIcons: { [key: string]: string } = {
+      'fajr': '🌙',
+      'dhuhr': '☀️',
+      'asr': '🌤️',
+      'maghrib': '🌇',
+      'isha': '�',
+    };
 
-    for (const prayer of prayers) {
-      const prayerMinutes = parseTime(prayer.time);
+    for (const key of prayerKeys) {
+      const prayer = prayerData.prayer_schedule[key];
+      if (!prayer) continue;
+      
+      const prayerMinutes = parseTime(prayer.begins['en']);
       if (currentMinutes < prayerMinutes) {
-        return prayer;
+        return {
+          name: key,
+          time: prayer.begins['en'],
+          icon: prayerIcons[key],
+        };
       }
     }
     
     // If all prayers have passed, return the first prayer (fajr) for tomorrow
-    return prayers[0] || null;
+    const firstPrayer = prayerData.prayer_schedule.fajr;
+    if (firstPrayer) {
+      return {
+        name: 'fajr',
+        time: firstPrayer.begins['en'],
+        icon: prayerIcons['fajr'],
+      };
+    }
+    return null;
   }
 
   const nextPrayer = getNextPrayer();
