@@ -79,9 +79,9 @@ export default function Home() {
   }
 
   function parseTime(timeStr: string): number {
-    const isPM = timeStr.toLowerCase().includes('pm');
-    const isAM = timeStr.toLowerCase().includes('am');
-    const cleanTime = timeStr.replace(/(am|pm|AM|PM|\s)/g, '');
+    const isPM = timeStr.toLowerCase().includes('pm') || timeStr.includes('م');
+    const isAM = timeStr.toLowerCase().includes('am') || timeStr.includes('ص');
+    const cleanTime = timeStr.replace(/(am|pm|AM|PM|م|ص|\s)/g, '');
     const [hours, minutes] = cleanTime.split(':').map(Number);
     let totalMinutes = hours * 60 + minutes;
     if (isPM && hours !== 12) totalMinutes += 12 * 60;
