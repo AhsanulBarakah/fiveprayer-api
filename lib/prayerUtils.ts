@@ -39,28 +39,9 @@ export function getNextPrayer(prayerData: PrayerTimesResponse): NextPrayer | nul
 }
 
 export function shouldUpdateNextPrayer(prayerData: PrayerTimesResponse): boolean {
-  if (!prayerData) return false;
-
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  
-  const prayers = [
-    { name: 'fajr', iqamah: prayerData.prayer_schedule.fajr.iqamah?.['en'] },
-    { name: 'dhuhr', iqamah: prayerData.prayer_schedule.dhuhr.iqamah?.['en'] },
-    { name: 'asr', iqamah: prayerData.prayer_schedule.asr.iqamah?.['en'] },
-    { name: 'maghrib', iqamah: prayerData.prayer_schedule.maghrib.iqamah?.['en'] },
-    { name: 'isha', iqamah: prayerData.prayer_schedule.isha.iqamah?.['en'] },
-  ];
-
-  for (const prayer of prayers) {
-    if (prayer.iqamah) {
-      const iqamahMinutes = parseTime(prayer.iqamah);
-      if (currentMinutes >= iqamahMinutes && currentMinutes < iqamahMinutes + 1) {
-        return true;
-      }
-    }
-  }
-  return false;
+  // Always return true to update next prayer every minute
+  // This ensures the highlight changes dynamically as time passes
+  return true;
 }
 
 function parseTime(timeStr: string): number {
