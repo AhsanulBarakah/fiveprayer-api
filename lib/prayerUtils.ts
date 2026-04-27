@@ -17,25 +17,30 @@ const prayerIcons: { [key: string]: string } = {
 export function getNextPrayer(prayerData: PrayerTimesResponse): NextPrayer | null {
   if (!prayerData) return null;
 
-  const apiNextPrayer = prayerData.next_prayer['en'].toLowerCase();
-  const prayerKeys: (keyof typeof prayerData.prayer_schedule)[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  
+  const prayers: { key: string; time: string; icon: string }[] = [
+    { key: 'fajr', time: prayerData.prayer_schedule.fajr.begins['en'], icon: prayerIcons['fajr'] },
+    { key: 'dhuhr', time: prayerData.prayer_schedule.dhuhr.begins['en'], icon: prayerIcons['dhuhr'] },
+    { key: 'asr', time: prayerData.prayer_schedule.asr.begins['en'], icon: prayerIcons['asr'] },
+    { key: 'maghrib', time: prayerData.prayer_schedule.maghrib.begins['en'], icon: prayerIcons['maghrib'] },
+    { key: 'isha', time: prayerData.prayer_schedule.isha.begins['en'], icon: prayerIcons['isha'] },
+  ];
 
-  // Find the prayer key by matching the API's next_prayer name with prayer_schedule names
-  for (const key of prayerKeys) {
-    const prayer = prayerData.prayer_schedule[key];
-    if (!prayer) continue;
-    
-    const prayerName = prayer.name['en'].toLowerCase();
-    if (prayerName === apiNextPrayer || apiNextPrayer.includes(prayerName) || prayerName.includes(apiNextPrayer)) {
+  for (const prayer of prayers) {
+    const prayerMinutes = parseTime(prayer.time);
+    if (currentMinutes < prayerMinutes) {
       return {
-        name: key,
-        time: prayer.begins['en'],
-        icon: prayerIcons[key],
+        name: prayer.key,
+        time: prayer.time,
+        icon: prayer.icon,
       };
     }
   }
   
-  return null;
+  // If all prayers have passed, return the first prayer (fajr) for tomorrow
+  return prayers[0] ? { name: prayers[0].key, time: prayers[0].time, icon: prayers[0].icon } : null;
 }
 
 export function shouldUpdateNextPrayer(prayerData: PrayerTimesResponse): boolean {
