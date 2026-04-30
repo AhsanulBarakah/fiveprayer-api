@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { PrayerTimesResponse } from '../lib/api';
-import { getNextPrayer, shouldUpdateNextPrayer } from '../lib/prayerUtils';
+import { getNextPrayer } from '../lib/prayerUtils';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import Header from './components/Header';
 import NextPrayer from './components/NextPrayer';
@@ -41,20 +41,26 @@ export default function Home() {
     // Schedule 1 AM refresh
     const refreshTimeout = scheduleOneAMRefresh();
 
-    // Update next prayer every minute, but only when iqamah time has passed
-    const nextPrayerInterval = setInterval(() => {
-      if (shouldUpdateNextPrayer(prayerData)) {
-        const next = getNextPrayer(prayerData);
-        setNextPrayer(next);
-      }
-    }, 60000); // Check every minute
+    // Schedule refresh based on API timestamp (when next prayer changes)
+    const now = Math.floor(Date.now() / 1000);
+    const refreshDelay = (prayerData.timestamp - now) * 1000;
+    
+    let timestampTimeout: NodeJS.Timeout | null = null;
+    if (refreshDelay > 0) {
+      timestampTimeout = setTimeout(() => {
+        fetch('/api/prayer-times')
+          .then(res => res.json())
+          .then(setPrayerData)
+          .catch(setError);
+      }, refreshDelay);
+    }
 
     // Initial calculation
     setNextPrayer(getNextPrayer(prayerData));
 
     return () => {
       if (refreshTimeout) clearTimeout(refreshTimeout);
-      clearInterval(nextPrayerInterval);
+      if (timestampTimeout) clearTimeout(timestampTimeout);
     };
   }, [prayerData, currentLang]);
 

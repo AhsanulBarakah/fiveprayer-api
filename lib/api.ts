@@ -32,6 +32,7 @@ export interface PrayerTimesResponse {
   language: string;
   languages: string[];
   time_format: string;
+  timestamp: number;
 }
 
 export async function fetchPrayerTimes(
