@@ -7,7 +7,7 @@ A prayer times application built with Next.js, displaying Islamic prayer times i
 - Real-time prayer times fetched from FivePrayer API
 - Bilingual support (English/Arabic) with instant language switching
 - Live clock with Arabic numeral support
-- Dynamic next prayer calculation based on API's next_prayer field
+- Dynamic next prayer highlighting using API timestamp for automatic refresh scheduling
 - Daily auto-refresh at 1 AM for next day's prayer times
 
 ## 🚀 Getting Started
@@ -118,12 +118,12 @@ The API key is stored in the `.env.local` file (not committed to git). Use `.env
 1. **Page Load**: Client fetches prayer times from `/api/prayer-times`
 2. **API Endpoint**: Calls FivePrayer API with the API key
 3. **Display**: Prayer times rendered in the UI
-4. **Updates**: Next prayer determined from API's next_prayer field
+4. **Automatic Refresh**: Frontend uses API's `timestamp` field to schedule automatic refresh when the next prayer changes
 5. **1 AM Daily Refresh**: Prayer times automatically refresh at 1 AM for the new day
 
 ### Client-Side Features
 
-- **Next Prayer Highlighting**: Uses API's next_prayer field with name normalization
+- **Next Prayer Highlighting**: Uses API's `timestamp` field to schedule automatic refresh when the next prayer changes
 - **Language Switching**: Instant toggle between English and Arabic
 
 ### Server-Side Features
@@ -238,7 +238,8 @@ For self-hosting or custom deployment.
 
 - Ensure JavaScript is enabled in your browser
 - Check the browser console for errors
-- The next prayer updates every minute automatically
+- The app uses the API's `timestamp` field to automatically refresh when the next prayer changes
+- If the timestamp is not updating, check that the API is returning the correct timestamp value
 
 ### Next Prayer Highlight Wrong in Arabic
 
