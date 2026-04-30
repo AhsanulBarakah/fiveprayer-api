@@ -41,26 +41,18 @@ export default function Home() {
     // Schedule 1 AM refresh
     const refreshTimeout = scheduleOneAMRefresh();
 
-    // Schedule refresh based on API timestamp (when next prayer changes)
-    const now = Math.floor(Date.now() / 1000);
-    const refreshDelay = (prayerData.timestamp - now) * 1000;
-    
-    let timestampTimeout: NodeJS.Timeout | null = null;
-    if (refreshDelay > 0) {
-      timestampTimeout = setTimeout(() => {
-        fetch('/api/prayer-times')
-          .then(res => res.json())
-          .then(setPrayerData)
-          .catch(setError);
-      }, refreshDelay);
-    }
+    // Update next prayer every minute based on current time
+    const nextPrayerInterval = setInterval(() => {
+      const next = getNextPrayer(prayerData);
+      setNextPrayer(next);
+    }, 60000); // Check every minute
 
     // Initial calculation
     setNextPrayer(getNextPrayer(prayerData));
 
     return () => {
       if (refreshTimeout) clearTimeout(refreshTimeout);
-      if (timestampTimeout) clearTimeout(timestampTimeout);
+      clearInterval(nextPrayerInterval);
     };
   }, [prayerData, currentLang]);
 
